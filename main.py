@@ -20,7 +20,7 @@ async def scrape_website(request: ScrapeRequest):
     output_file = f"output_{unique_id}.json"
     
     command = [
-        "scrapy", "runspider", "spiders/dynamic_spider.py",  # Make sure the path to the spider is correct
+        "scrapy", "runspider", "tradingagent/tradingagent/spiders/dynamic_spider.py",  # Make sure the path to the spider is correct
         "-a", f"start_url={request.url}",
         "-o", output_file
     ]
