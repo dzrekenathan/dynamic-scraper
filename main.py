@@ -1,18 +1,43 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, responses
 from urllib.parse import urlparse
-from scrapy.crawler import CrawlerProcess
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import subprocess
 import uuid
 import json
 import os
+import pydantic
+import enum
+from typing import Dict
+
+
 
 app = FastAPI()
 
 class ScrapeRequest(BaseModel):
     url: str
+
+class Status(str, enum.Enum):
+    PASS = "pass"
+    FAIL = "fail"
+    WARN = "warn"
+
+class Health(BaseModel):
+    status: Status
+    version: str
+    releaseId: str
+
+class HealthResponse(responses.JSONResponse):
+    media_type = "application/health+json"
+
+@app.get("/health", response_class=HealthResponse)
+async def get_health() -> Dict[str, str]:
+    return {
+        "status": Status.PASS.value,  # Correct enum reference
+        "version": "0.0.1",
+        "releaseId": "1",
+    }
+
 
 @app.post("/scrape")
 async def scrape_website(request: ScrapeRequest):
