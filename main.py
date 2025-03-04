@@ -9,8 +9,12 @@ import os
 import pydantic
 import enum
 from typing import Dict
+import requests
+from bs4 import BeautifulSoup
 
-
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+}
 
 app = FastAPI()
 
@@ -37,6 +41,23 @@ async def get_health() -> Dict[str, str]:
         "version": "0.0.1",
         "releaseId": "1",
     }
+
+
+
+@app.get("/test-link")
+async def test_link(link: str):
+    try:
+        response = requests.get(link, headers=headers)
+        if response.status_code == 200:
+            return "Successfully fetched the webpage!"
+        else:
+            return {
+                "Message: ": "Failed to fetch webpage",
+                "Status Code: ": response.status_code
+            }  
+    except requests.exceptions.HTTPError as err:
+        return f"HTTP error occurred: {err}"
+
 
 
 @app.post("/scrape")
